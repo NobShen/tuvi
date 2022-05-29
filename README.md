@@ -1,1 +1,28 @@
-# tuvi
+# create tuvi.com website 
+- Install Ubuntu server 22.04
+- Install multipass
+-   sudo snap install multipass
+-   sudo snap info multipass
+-   sudo snap remove multipass
+- Create a new vm with multipass & play
+-   multipass launch --name foo //or to be more specific below
+-   multipass launch --name myVM --mem 2G --disk 10G --cpus 2 impish
+-   multipass exec foo -- lsb_release -a //run command lsb_release -a in the vm named foo
+-   multipass list
+-   multipass stop foo
+-   multipass start foo
+-   multipass delete foo
+-   multipass purge
+-   multipass find
+-   multipass help
+-   multipass help <command>
+- Get into vm foo shell
+-   multipass shell foo
+- Now install lamp on foo
+-   sudo apt install tasksel
+-   sudo tasksel install lamp-server
+- Install individual components if preferred
+-   sudo apt install apache2
+-   sudo apt install mysql-server
+-   sudo apt install php libapache2-mod-php php-mysql
+-   sudo apt install php-curl php-json php-cgi
