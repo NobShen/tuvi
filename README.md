@@ -26,3 +26,5 @@
 -   sudo apt install mysql-server
 -   sudo apt install php libapache2-mod-php php-mysql
 -   sudo apt install php-curl php-json php-cgi
+- Now run docker
+-   sudo multipass exec docker docker run hello-world
