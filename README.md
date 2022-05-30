@@ -31,5 +31,8 @@
 -   curl -sS https://getcomposer.org
 - Create a Drupal project using Composer
 -   composer create-project drupal/recommended-project dir-name //create a project in ~/dir-name
-- Now run docker
+- You might be using a docker based workflow and therefore do not have composer and its dependencies already installed. 
+- If this is the case then you can create the drupal project with this command:
+-    docker run --rm -i --tty -v $PWD:/app composer create-project drupal/recommended-project my_site_name_dir --ignore-platform-reqs
+- Now run docker hello-world to verify docker is installed correctly
 -   sudo multipass exec docker docker run hello-world
