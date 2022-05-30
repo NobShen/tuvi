@@ -27,9 +27,7 @@
 -   sudo apt install mysql-server
 -   sudo apt install php libapache2-mod-php php-mysql
 -   sudo apt install php-curl php-json php-cgi
-- Install Composer to install Drupal:
--   cd ~
--   curl -sS https://getcomposer.org
+- Install Composer to install Drupal.  Follow instructions here: https://getcomposer.org/download/
 - Create a Drupal project using Composer
 -   composer create-project drupal/recommended-project dir-name //create a project in ~/dir-name
 - If you're using a docker based workflow and do not have composer, you can create Drupal as follow:
