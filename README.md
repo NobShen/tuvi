@@ -34,7 +34,7 @@
 - If you're using a docker based workflow and do not have composer, you can create Drupal as follow:
 -   docker run --rm -i --tty -v $PWD:/app composer create-project drupal/recommended-project my_site_name_dir --ignore-platform-reqs
 - Now run docker hello-world to verify docker is installed correctly:  sudo multipass exec docker docker run hello-world
--   
+-   sudo multipass docker run hello-world //Hello from Docker!
 
 Miscellaneous:
 - Install Ubuntu desktop on your server:  sudo apt-get install --no-install-recommends ubuntu-desktop
