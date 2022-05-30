@@ -26,5 +26,10 @@
 -   sudo apt install mysql-server
 -   sudo apt install php libapache2-mod-php php-mysql
 -   sudo apt install php-curl php-json php-cgi
+- Install Composer to install Drupal
+-   cd ~
+-   curl -sS https://getcomposer.org
+- Create a Drupal project using Composer
+-   composer create-project drupal/recommended-project dir-name //create a project in ~/dir-name
 - Now run docker
 -   sudo multipass exec docker docker run hello-world
