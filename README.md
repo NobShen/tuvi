@@ -1,5 +1,6 @@
 # create tuvi.com website 
-- Install Ubuntu server 22.04
+- Install Ubuntu server 22.04 & disable ignore lid behavior:  sudo nano /etc/systemd/logind.conf
+- Then restart it:  systemctl restart systemd-logind.service
 - Install multipass
 -   sudo snap install multipass
 -   sudo snap info multipass
