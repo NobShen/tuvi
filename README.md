@@ -39,3 +39,5 @@
 Miscellaneous:
 - Install Ubuntu desktop on your server:  sudo apt-get install --no-install-recommends ubuntu-desktop
 - Remove Ubuntu desktop when you're done:  sudo apt purge ubuntu-desktop -y && sudo apt autoremove -y && sudo apt autoclean
+- https://techsparx.com/software-development/docker/swarm/multipass.html
+- 
