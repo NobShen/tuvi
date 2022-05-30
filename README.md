@@ -26,13 +26,16 @@
 -   sudo apt install mysql-server
 -   sudo apt install php libapache2-mod-php php-mysql
 -   sudo apt install php-curl php-json php-cgi
-- Install Composer to install Drupal
+- Install Composer to install Drupal:
 -   cd ~
 -   curl -sS https://getcomposer.org
 - Create a Drupal project using Composer
 -   composer create-project drupal/recommended-project dir-name //create a project in ~/dir-name
-- You might be using a docker based workflow and therefore do not have composer and its dependencies already installed. 
-- If this is the case then you can create the drupal project with this command:
--    docker run --rm -i --tty -v $PWD:/app composer create-project drupal/recommended-project my_site_name_dir --ignore-platform-reqs
-- Now run docker hello-world to verify docker is installed correctly
--   sudo multipass exec docker docker run hello-world
+- If you're using a docker based workflow and do not have composer, you can create Drupal as follow:
+-   docker run --rm -i --tty -v $PWD:/app composer create-project drupal/recommended-project my_site_name_dir --ignore-platform-reqs
+- Now run docker hello-world to verify docker is installed correctly:  sudo multipass exec docker docker run hello-world
+-   
+
+Miscellaneous:
+- Install Ubuntu desktop on your server:  sudo apt-get install --no-install-recommends ubuntu-desktop
+- Remove Ubuntu desktop when you're done:  sudo apt purge ubuntu-desktop -y && sudo apt autoremove -y && sudo apt autoclean
