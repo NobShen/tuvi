@@ -1,0 +1,17 @@
+  Users logged in:            0
+  IPv4 address for enp3s0:    192.168.254.144
+  IPv4 address for lxdbr0:    10.148.215.1
+  IPv6 address for lxdbr0:    fd42:9d90:6a48:cb82::1
+  IPv4 address for lxdfan0:   240.144.0.1
+  IPv4 address for mpbr0:     10.215.30.1
+  IPv6 address for mpbr0:     fd42:9f2b:7e97:226d::1
+  IPv4 address for mpqemubr0: 10.227.18.1
+  
+  drupalVM                Running           10.215.30.64     Ubuntu 20.04 LTS
+  erudite-fawn            Running           10.215.30.110    Ubuntu 20.04 LTS
+                                          10.215.30.182
+  forceful-wahoo          Running           10.215.30.62     Ubuntu 20.04 LTS
+  fragrant-hummingbird    Running           10.215.30.67     Ubuntu 20.04 LTS
+                                          10.148.215.156
+  improving-axolotl       Running           10.215.30.2      Ubuntu 20.04 LTS
+                                          240.144.0.190
