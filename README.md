@@ -19,6 +19,10 @@
 -   multipass help <command>
 - Get into vm foo shell
 -   multipass shell foo
+- Setup multipass network configuration:  make sure lxd driver is used: sudo multipass set local.driver=lxd
+- Then restart it to take effect: sudo snap restart multipass.multipassd
+- Show multipass networks:  sudo multipass networks
+- Bridge multipass network to physical network:  sudo multipass launch --network en0 --network name=bridge0,mode=manual
 - Now install lamp on foo
 -   sudo apt install tasksel
 -   sudo tasksel install lamp-server
