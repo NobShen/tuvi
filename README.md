@@ -22,7 +22,9 @@
 - Setup multipass network configuration:  make sure lxd driver is used: sudo multipass set local.driver=lxd
 - Then restart it to take effect: sudo snap restart multipass.multipassd
 - Show multipass networks:  sudo multipass networks
+- Bridge to physical network:  sudo multipass launch --network enp3s0 --network name=mpbr0,mode=manual
 - Bridge multipass network to physical network:  sudo multipass launch --network en0 --network name=bridge0,mode=manual
+- If failed, check:  sudo lxd -d -v init
 - Now install lamp on foo
 -   sudo apt install tasksel
 -   sudo tasksel install lamp-server
@@ -44,4 +46,4 @@ Miscellaneous:
 - Install Ubuntu desktop on your server:  sudo apt-get install --no-install-recommends ubuntu-desktop
 - Remove Ubuntu desktop when you're done:  sudo apt purge ubuntu-desktop -y && sudo apt autoremove -y && sudo apt autoclean
 - https://techsparx.com/software-development/docker/swarm/multipass.html
-- 
+- https://gist.github.com/ynott/f4bdc89b940522f2a0e4b32790ddb731 //shows how to connect VM to network
