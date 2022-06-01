@@ -1,0 +1,67 @@
+Creating a Docker Swarm using Multipass and Ubuntu 20.04 on your laptop
+
+https://techsparx.com/software-development/docker/swarm/multipass.html
+
+Docker Swarm is one of many Docker Orchestration platforms. It handles distributing Docker containers across a set of nodes, ensuring the reliability of the swarm by redeploying containers as needed and much more. Multipass gives us an easy way to experiment with Docker Swarm without leaving our laptop.
+
+To install Multipass, head to  (multipass.run) https://multipass.run and find the installer for your system. Alternately you'll find Multipass available in some package management systems.
+
+The steps required to setup Docker Swarm on Ubuntu 20.04 on Multipass are:
+
+Initialize an Ubuntu 20.04 instance on Multipass
+Inside the instance execute the steps to initialize Docker on Ubuntu 20.04
+Inside the first such instance run docker swarm init
+Inside subsequent instances, run the command causing the instance to join the swarm
+The official instructions for installing Docker on Ubuntu are at:
+
+(docs.docker.com) https://docs.docker.com/engine/install/ubuntu/ -- Install Docker-CE on Ubuntu
+(docs.docker.com) https://docs.docker.com/engine/install/linux-postinstall/ -- Run post-install steps for Linux
+While on Windows we install Docker for Windows, and on macOS we install Docker for macOS, on Linux we simply install Docker. That's because Docker runs natively on Linux.
+
+Our goal is to convert the official instructions into shell scripts. That's so we can easily create new instances any time we wish and quickly build up a Swarm cluster of any size.
+
+First, create init-instance.sh containing:
+
+  NM=$1
+
+  multipass launch --name ${NM} focal
+  multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
+  multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
+
+The name for the instance is to be passed on the command line. In the multipass launch we specify an image name of focal which refers to Ubuntu 20.04. As of this writing, in May 2020, the 20.04 image is the latest, but it is not supported in Multipass as the LTS release yet.
+
+The rest of this script transfers a script, setup-instance.sh, to the newly created instance, and then executes that script. While most of the commands in setup-instance.sh could have been executed using multipass exec, some of the commands did not work well that way, and it was found necessary to instead transfer in a shell script.
+
+Create setup-instance.sh containing:
+
+  sudo apt-get update
+  sudo apt-get upgrade -y
+  sudo apt-get -y install \
+      apt-transport-https \
+      ca-certificates \
+      curl \
+      gnupg-agent \
+      software-properties-common
+
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+  sudo apt-key fingerprint 0EBFCD88
+
+  sudo add-apt-repository \
+     "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+  sudo apt-get update
+  sudo apt-get upgrade -y
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+  sudo groupadd docker
+  sudo usermod -aG docker ubuntu
+  sudo systemctl enable docker
+
+This is the commands listed in the official instructions, with a couple small transliterations. The first portion updates the installed packages, then adds to apt-get the ability to load packages from HTTPS servers. Then we set up the Ubuntu package repository for Docker, and then install Docker rom that repository. Finally we make sure the docker group exists, and add the ubuntu user ID to that group so that we can run docker commands, and finish it out by ensuring the docker daemon runs on system boot.
+
+This does not do any Docker Swarm commands. But it does get Docker running, which you can verify as so:
+
+  $ sudo multipass exec NAME -- docker run hello-world
+
+This is the standard way to verify Docker is initialized, to run the hello-world container. If configured correctly, it will download the hello-world image, then instantiate a container, which will print out a useful message. Substitute for NAME the instance name you specified.
+
