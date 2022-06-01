@@ -24,9 +24,9 @@ First, create init-instance.sh containing:
 
   NM=$1
 
-  multipass launch --name ${NM} focal
-  multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
-  multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
+  sudo multipass launch --name ${NM} focal
+  sudo multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
+  sudo multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
 
 The name for the instance is to be passed on the command line. In the multipass launch we specify an image name of focal which refers to Ubuntu 20.04. As of this writing, in May 2020, the 20.04 image is the latest, but it is not supported in Multipass as the LTS release yet.
 
