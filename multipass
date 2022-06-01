@@ -10,14 +10,16 @@ HOW TO BRIDGE VM TO REAL ADDRESS???
 -   multipass find
 -   multipass help
 -   multipass help <command>
-- Get into vm foo shell
--   multipass shell foo
+
 - Setup multipass network configuration:  make sure lxd driver is used: sudo multipass set local.driver=lxd
 - Then restart it to take effect: sudo snap restart multipass.multipassd
 - Show multipass networks:  sudo multipass networks
 - Bridge to physical network:  sudo multipass launch --network enp3s0 --network name=mpbr0,mode=manual
 - Bridge multipass network to physical network:  sudo multipass launch --network en0 --network name=bridge0,mode=manual
 - If failed, check:  sudo lxd -d -v init
+
+- Get into vm foo shell
+-   multipass shell foo
 
   Users logged in:            0
   IPv4 address for enp3s0:    192.168.254.144
