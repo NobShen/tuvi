@@ -1,0 +1,241 @@
+Setting up a Docker Swarm on Multipass Ubuntu instances
+With those scripts, we can start up an Ubuntu/Docker instance, and initialize the Swarm.
+
+  $ sh -x init-instance.sh swarm1
+  + NM=swarm1
+  + multipass launch --name swarm1 focal
+  Launched: swarm1                                                                
+  + multipass transfer setup-instance.sh swarm1:/home/ubuntu/setup-instance.sh    
+  + multipass exec swarm1 -- sh -x /home/ubuntu/setup-instance.sh
+  + sudo apt-get update
+  ... much output
+  + sudo systemctl enable docker
+  Synchronizing state of docker.service with SysV service script with /lib/systemd/systemd-sysv-install.
+  Executing: /lib/systemd/systemd-sysv-install enable docker
+  $ 
+
+Within a minute or so this launches a Multipass instance and sets up Docker.
+
+  $ multipass list
+  Name                    State             IPv4             Image
+  swarm1                  Running           192.168.64.14    Ubuntu 20.04 LTS
+
+  $ multipass exec swarm1 -- docker run hello-world
+  Unable to find image 'hello-world:latest' locally
+  latest: Pulling from library/hello-world
+  0e03bdcc26d7: Pull complete 
+  Digest: sha256:6a65f928fb91fcfbc963f7aa6d57c8eeb426ad9a20c7ee045538ef34847f44f1
+  Status: Downloaded newer image for hello-world:latest
+
+  Hello from Docker!
+  ...
+
+The swarm1 instance is running, and we can execute Docker. Let's initialize Docker Swarm.
+
+  $ multipass exec swarm1 -- docker swarm init
+  Swarm initialized: current node (xki1yma9q91401zv0i0yksrht) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+  docker swarm join --token SWMTKN-1-10r3749fp92qk7bpszvv2ejvdrbc4vkoaeks7kkpqdlytwbcq8-33a4kq3xpb315zrwhghs68atx 192.168.64.14:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+  $ multipass exec swarm1 -- docker node ls
+  ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+  xki1yma9q91401zv0i0yksrht *   swarm1              Ready               Active              Leader              19.03.9
+
+This Swarm has one node in it, and that one node is the Leader of the cluster. It's easy to be elected Leader when you're the only person voting, eh?
+
+The output includes a command to use for any new Docker system you wish to add to the cluster. You don't need to record the command string, but instead you need to learn these two commands:
+
+  $ multipass exec swarm1 -- docker swarm join-token manager
+  $ multipass exec swarm1 -- docker swarm join-token worker
+
+The docker swarm join-token {manager,worker} command gives you the command string for a node to join the cluster as either a Manager or Worker node.
+
+There are two kinds of nodes in a Swarm cluster.
+
+Manager nodes maintain the Swarm Cluster. They communicate with each other, and automatically maintain shared state across the nodes in the cluster. The inter-manager communication channel is called the control plane.
+Worker nodes do not engage in the management of the cluster, and are simply executing tasks within the cluster. Manager nodes can also execute tasks as a worker, making Docker Swarm more egalitarian than most workplaces.
+ 
+Adding a second manager to the Swarm
+  $ sh -x init-instance.sh swarm2
+  ... much output
+  $ multipass exec swarm1 -- docker swarm join-token manager
+
+To add a manager to this swarm, run the following command:
+
+  docker swarm join --token SWMTKN-1-10r3749fp92qk7bpszvv2ejvdrbc4vkoaeks7kkpqdlytwbcq8-4bfaew5hps8mntqubxt9kkc4n 192.168.64.14:2377
+  $ multipass exec swarm2 -- docker swarm join --token SWMTKN-1-10r3749fp92qk7bpszvv2ejvdrbc4vkoaeks7kkpqdlytwbcq8-4bfaew5hps8mntqubxt9kkc4n 192.168.64.14:2377
+
+This node joined a swarm as a manager.
+
+  $ multipass exec swarm1 -- docker node ls
+  ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+  xki1yma9q91401zv0i0yksrht *   swarm1              Ready               Active              Leader              19.03.9
+  wgcj54zs2u3k9x1th3s20s1lm     swarm2              Ready               Active              Reachable           19.03.9
+
+There is now two nodes.
+
+Adding a worker node to the Swarm
+  $ sh -x init-instance.sh swarm3
+  ...
+  $ multipass exec swarm1 -- docker swarm join-token worker
+
+To add a worker to this swarm, run the following command:
+
+  docker swarm join --token SWMTKN-1-10r3749fp92qk7bpszvv2ejvdrbc4vkoaeks7kkpqdlytwbcq8-33a4kq3xpb315zrwhghs68atx 192.168.64.14:2377
+  $ multipass exec swarm3 -- docker swarm join --token SWMTKN-1-10r3749fp92qk7bpszvv2ejvdrbc4vkoaeks7kkpqdlytwbcq8-33a4kq3xpb315zrwhghs68atx 192.168.64.14:2377
+
+This node joined a swarm as a worker.
+
+  $ multipass list
+  Name                    State             IPv4             Image
+  swarm1                  Running           192.168.64.14    Ubuntu 20.04 LTS
+  swarm2                  Running           192.168.64.15    Ubuntu 20.04 LTS
+  swarm3                  Running           192.168.64.16    Ubuntu 20.04 LTS
+
+  $ multipass exec swarm1 -- docker node ls
+  ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+  xki1yma9q91401zv0i0yksrht *   swarm1              Ready               Active              Leader              19.03.9
+  wgcj54zs2u3k9x1th3s20s1lm     swarm2              Ready               Active              Reachable           19.03.9
+  vk3c3etx53zq4hhzk7q6kgo3y     swarm3              Ready               Active                                  19.03.9
+  
+And we now have three nodes, two managers and one worker.
+
+Adding a workload to the swarm
+In a Docker Swarm we create a service that in turn contains tasks each of which contain a container. The container is the same container we create using the docker run command, the rest of that is so the Swarm can manage a set of containers across a set of Swarm nodes.
+
+  $ multipass exec swarm2 -- docker service create --name nginx --replicas 3 -p 80:80 nginx
+  l0z5s0e1rpoy35gksnioikf5w
+  overall progress: 3 out of 3 tasks 
+  1/3: running   
+  2/3: running   
+  3/3: running   
+  verify: Service converged 
+
+Here we request, on one of the manager nodes (swarm2), to create a Service named nginx. We're requesting three instances of the service, and it is to use the nginx image from Docker Hub. It will also expose port 80 from the container.
+
+  $ multipass exec swarm1 -- docker service ls
+  ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+  l0z5s0e1rpoy        nginx               replicated          3/3                 nginx:latest        *:80->80/tcp
+
+To prove that Swarm nodes talk to each other, let's list the services currently running on the cluster, but requesting that from the swarm1 node.
+
+  $ multipass exec swarm1 -- docker service ps nginx
+  ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
+  wcoiz9p6cmck        nginx.1             nginx:latest        swarm1              Running             Running 5 minutes ago                       
+  yud37ipf4lwb        nginx.2             nginx:latest        swarm2              Running             Running 5 minutes ago                       
+  wrze6s2csz62        nginx.3             nginx:latest        swarm3              Running             Running 4 minutes ago     
+
+And we can get the status of the nginx service, showing where the three tasks are running. Namely, the cluster distributed the tasks among the nodes, with one task per node.
+
+The nginx image helpfully shows a default HTML page, so we can visit the three Multipass instances at http://192.168.64.14/, http://192.168.64.15/ and http://192.168.64.16/ in a browser to verify that it is working from each.
+
+What won't be so visible is that the Swarm takes care of cross-connecting services so that each published service is visible on every node even if the service is not running on that node.
+
+Exploring cross-connection of services across Swarm nodes
+To explore how services are cross-connected across Swarm nodes, let's create a single service and see how it works.
+
+  $ multipass exec swarm1 -- docker service create --name httpd --replicas 1 -p 90:80 httpd
+  qnodrnbmpd5hy360fn99hgdg5
+  overall progress: 1 out of 1 tasks 
+  1/1: running   
+  verify: Service converged 
+
+  $ multipass exec swarm1 -- docker service ls
+  ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+  qnodrnbmpd5h        httpd               replicated          1/1                 httpd:latest        *:90->80/tcp
+  l0z5s0e1rpoy        nginx               replicated          3/3                 nginx:latest        *:80->80/tcp
+
+  $ multipass exec swarm1 -- docker service ps httpd
+  ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+  yb6dv4ur8eq2        httpd.1             httpd:latest        swarm1              Running             Running 49 seconds ago      
+
+To give equal time to Nginx's competition, we started one instance of the Apache HTTPD. The swarm assigned it to the swarm1 node. We set it to be visible on port 90.
+
+And, visiting http://192.168.64.14:90/, http://192.168.64.15:90/ and http://192.168.64.16:90/ does show the Apache service is visible via each Node.
+
+Modifying the state of a deployed service
+
+We can modify the state of a service which has been deployed, and the Swarm will distribute that modification.
+
+  $ multipass exec swarm1 -- docker service update --replicas 2 httpd
+  httpd
+  overall progress: 2 out of 2 tasks 
+  1/2: running   
+  2/2: running   
+  verify: Service converged 
+
+  $ multipass exec swarm1 -- docker service ps httpd
+  ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+  yb6dv4ur8eq2        httpd.1             httpd:latest        swarm1              Running             Running 4 minutes ago                        
+  9uxc9p9wbvdu        httpd.2             httpd:latest        swarm2              Running             Running 10 seconds ago      
+
+This increased the number of instances with there now being two httpd instances distributed to swarm1 and swarm2.
+ 
+Exploring containers deployed to each node
+
+Another command is docker container which has a number of commands for managing individual containers. With it we can explore the containers deployed on each node.
+
+Notice that in the NAME column we see names like nginx.2.yud37ipf4lwb43idtgu2bfhs7. In order for the container name to be unique across the cluster, Docker Swarm is adding that nonce to the container name.
+
+Another thing to notice is that, at the container, the HTTPD container is exposing port 80. It is at a higher level where the mapping from port 90 to port 80 occurs.
+
+Deleting services
+
+To clean up and remove a service:
+
+  $ multipass exec swarm2 -- docker service rm nginx
+  nginx
+
+   multipass exec swarm2 -- docker service ls
+  ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+  qnodrnbmpd5h        httpd               replicated          2/2                 httpd:latest        *:90->80/tcp
+
+  $ multipass exec swarm1 -- docker service rm httpd
+  httpd
+  $ multipass exec swarm2 -- docker service ls
+  ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+
+The service rm command starts the procedure to shut down a named service. It does that by distributing commands out to the cluster to shut down containers.
+
+Managing Multipass instances
+You can stop individual instances as so:
+
+  $ multipass stop swarm3
+  $ multipass stop swarm2
+  $ multipass stop swarm1
+
+Or delete them:
+
+  $ multipass delete swarm3
+  $ multipass delete swarm2
+  $ multipass delete swarm1
+  $ multipass purge
+
+The difference is that a stopped instance can be restarted, but a deleted instance is in a purgatory state. The purge command removes data related to any deleted instances.
+
+  $ multipass start swarm3
+  $ multipass start swarm2
+  $ multipass start swarm1
+
+If instead you wish to restart a node, simply use the start command.
+
+Something to experiment with is for a swarm that has running instances, what happens when you run stop on one of the instances. The swarm will redeploy containers as needed, for instance. If you've stopped the Leader instance, a new Leader will be elected.
+
+Performance
+
+This experiment was performed on a 2012 MacBook Pro with 16 GB of main memory and an SSD boot drive. That is, it's an eight year old computer that's been expanded to it's limit. Currently running is Chrome (with multiple top level windows and a couple hundred open tabs), Firefox and Safari browsers, plus several Visual Studio Code windows, and several other applications. In other words this is not a lightly loaded computer.
+
+But having three Multipass instances running simultaneously did not cause any appreciable slowdown to the system.
+
+The Multipass team claims that it is an extremely light-weight (meaning low system impact) virtual machine manager that supports full fledged Ubuntu instances. This experiment indicates the "low system impact" part is correct. While the Nginx and HTTPD containers I launched did not present much impact on the system, I did have three virtual machines, with three Nginx instances and two HTTPD instances, running simultaneously. Try that with VirtualBox on an eight year old MacBook Pro that has that many other processes running simultaneously.
+
+My memory of VirtualBox is that it quickly turns desktop computers into molasses.
+
+Summary
+Multipass looks to be a very useful tool for launching Ubuntu instances on a developers laptop. It is very capable, and you get a full-fledged Ubuntu instance in a minute or so. Supposedly it's possible for Multipass to support other operating systems, but it seems that Ubuntu is the only flavor available right now.
+
+Docker Swarm is a very capable Docker orchestrator. It is worth learning about Swarm, if only so you have a better understanding of Docker orchestration and therefore a clearer understanding of other Docker orchestrators. Multipass looks to be an excellent platform on which to experiment with Docker Swarm without having to leave your laptop.
