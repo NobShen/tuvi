@@ -2,8 +2,10 @@
 - Install Ubuntu server 22.04 & ignore lid behavior:  sudo nano /etc/systemd/logind.conf && systemctl restart systemd-logind.service
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
-- Create a new vm with multipass & play
-The steps required to setup Docker Swarm on Ubuntu 20.04 on Multipass are:
+- Create a new ubuntu 20.04 vm: sudo multipass launch --name drupalVM 20.04
+- Get inside drupalVM:  sudo multipass shell drupalVM
+- Initialize Docker on drupalVM:  
+- The steps required to setup Docker Swarm on Ubuntu 20.04 on Multipass are:
 
 Initialize an Ubuntu 20.04 instance on Multipass
 Inside the instance execute the steps to initialize Docker on Ubuntu 20.04
