@@ -1,12 +1,18 @@
 # create tuvi.com website 
-- Install Ubuntu server 22.04 & disable ignore lid behavior:  sudo nano /etc/systemd/logind.conf
-- Then restart it:  systemctl restart systemd-logind.service
-- Install multipass
--   sudo snap install multipass
--   sudo snap info multipass
--   sudo snap remove multipass
+- Install Ubuntu server 22.04 & ignore lid behavior:  sudo nano /etc/systemd/logind.conf && systemctl restart systemd-logind.service
+- Install multipass:  sudo snap install multipass && sudo snap info multipass
+-   To remove:  sudo snap remove multipass
 - Create a new vm with multipass & play
+The steps required to setup Docker Swarm on Ubuntu 20.04 on Multipass are:
 
+Initialize an Ubuntu 20.04 instance on Multipass
+Inside the instance execute the steps to initialize Docker on Ubuntu 20.04
+Inside the first such instance run docker swarm init
+Inside subsequent instances, run the command causing the instance to join the swarm
+The official instructions for installing Docker on Ubuntu are at:
+
+(docs.docker.com) https://docs.docker.com/engine/install/ubuntu/ -- Install Docker-CE on Ubuntu
+(docs.docker.com) https://docs.docker.com/engine/install/linux-postinstall/ -- Run post-install steps for Linux
 - Now install lamp on foo
 -   sudo apt install tasksel
 -   sudo tasksel install lamp-server
