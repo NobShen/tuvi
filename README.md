@@ -3,6 +3,21 @@
 - Use http://192.168.254.254/cgi-bin/home.ha to find out the ip address of the server
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
+- Setup multipass network configuration:  make sure lxd driver is used: 
+        
+        sudo multipass set local.driver=lxd        
+        sudo snap restart multipass.multipassd
+        
+  Show multipass networks:  
+        
+        sudo multipass networks
+        Name    Type      Description
+        enp3s0  ethernet  Ethernet device
+        mpbr0   bridge    Network bridge for Multipass
+- 
+- Bridge to physical network:  sudo multipass launch --network enp3s0 --network name=mpbr0,mode=manual
+- Bridge multipass network to physical network:  sudo multipass launch --network en0 --network name=bridge0,mode=manual
+- If failed, check:  sudo lxd -d -v init
 - Create a Docker instance:
 
         The official instructions for installing Docker on Ubuntu are at:
