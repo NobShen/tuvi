@@ -5,14 +5,14 @@ Find out the name of the Netplan file with the command:
 
 ls /etc/netplan/
 
-You’ll see something like 01-netcfg.yaml (or maybe 50-cloud-init.yaml) listed. Back that file up with the command:
+You’ll see something like 00-installer-config.yaml listed. Back that file up with the command:
 
-      sudo nano /etc/netplan/00-installer-config.yaml
-
-sudo cp /etc/netplan/01-netcfg.yaml /etc/netplan/01-netcfg.yaml.bak
+      sudo cp /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml
 
 Now that you have your Netplan file backed up, let’s open it for editing with the command:
 
-sudo nano /etc/netplan/01-netcfg.yaml
+      sudo nano /etc/netplan/00-installer-config.yaml
 
 That file will look something like:
+
+
