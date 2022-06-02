@@ -91,3 +91,21 @@ Miscellaneous:
 
 - Multipass swarm install: https://techsparx.com/software-development/docker/swarm/multipass.html
 - Connect VM to network:  https://gist.github.com/ynott/f4bdc89b940522f2a0e4b32790ddb731
+- multipass networks command | Multipass documentation
+
+        https://multipass.run/docs/networks-command/19542
+
+Additional network interfaces | Multipass documentation
+
+        https://multipass.run/docs/additional-networks
+
+multipass networks command - Multipass / Documentation - Ubuntu Community Hub
+
+        https://discourse.ubuntu.com/t/multipass-networks-command/19542
+
+        "networks failed: LXD object not found" after sudo snap connect multipass:lxd lxd 
+        canonical/multipass#2139
+
+How to Create a Bridged Network for LXD Containers – The New Stack
+
+        https://thenewstack.io/how-to-create-a-bridged-network-for-lxd-containers/
