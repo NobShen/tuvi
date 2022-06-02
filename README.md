@@ -84,7 +84,10 @@
         composer create-project drupal-composer/drupal-project:9.x-dev askVN --no-interaction
 
 Miscellaneous:
-- Install Ubuntu desktop on your server:  sudo apt-get install --no-install-recommends ubuntu-desktop
-- Remove Ubuntu desktop when you're done:  sudo apt purge ubuntu-desktop -y && sudo apt autoremove -y && sudo apt autoclean
-- https://techsparx.com/software-development/docker/swarm/multipass.html
-- https://gist.github.com/ynott/f4bdc89b940522f2a0e4b32790ddb731 //shows how to connect VM to network
+- Install Ubuntu desktop on your server:  
+        
+        sudo apt-get install --no-install-recommends ubuntu-desktop
+        sudo apt purge ubuntu-desktop -y && sudo apt autoremove -y && sudo apt autoclean
+
+- Multipass swarm install: https://techsparx.com/software-development/docker/swarm/multipass.html
+- Connect VM to network:  https://gist.github.com/ynott/f4bdc89b940522f2a0e4b32790ddb731
