@@ -1,15 +1,11 @@
 # working with git
     git clone git://git.drupalcode.org/projects/examples
-
 # Here is the exercise:
     http://randyfay.com/node/72
-
-# Learn to use git! Get logs:
+# Get logs:
     git log
-
 # Get status:
     git status
-
 # Add a file:  
     git add .
 # Commit:
@@ -26,11 +22,9 @@
     git diff master
 # Return to master (switch):
     git checkout master
-
 # You can also use TAB to autocomplete the command. 
     git --global user.name "your name"
     git --global user.email yours@exhf.com
-
 # When you finish your work:
     git pull
     git push
