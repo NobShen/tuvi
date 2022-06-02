@@ -1,5 +1,6 @@
 # create tuvi.com website 
 - Install Ubuntu server 22.04 & ignore lid behavior:  sudo nano /etc/systemd/logind.conf && systemctl restart systemd-logind.service
+- Use http://192.168.254.254/cgi-bin/home.ha to find out the ip address of the server
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
 - Create a Docker instance:
