@@ -68,6 +68,10 @@
   
         docker run --rm -i --tty -v $PWD:/app composer create-project drupal/recommended-project my_site_name_dir --ignore-platform-reqs
 
+  Or you can use an image here:
+  
+        docker run -i -t -p 80:80 ricardoamaro/drupal9
+  
   You can verify that Drupal is installed by: curl 
 
 - Another way to install Drupal on drupalVM:  
