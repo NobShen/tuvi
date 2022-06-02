@@ -2,9 +2,46 @@
 - Install Ubuntu server 22.04 & ignore lid behavior:  sudo nano /etc/systemd/logind.conf && systemctl restart systemd-logind.service
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
-- Create 
-- Create a new ubuntu 20.04 vm: sudo multipass launch --name drupalVM 20.04
-- Get inside drupalVM:  sudo multipass shell drupalVM
+- Create a Docker instance:
+-   sudo nano init-instance.sh
+        NM=$1
+
+        multipass launch --name ${NM} focal
+        multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
+        multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
+
+-   sudo nano setup-instance.sh
+        sudo apt-get update
+        sudo apt-get upgrade -y
+        sudo apt-get -y install \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            gnupg-agent \
+            software-properties-common
+
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+        sudo apt-key fingerprint 0EBFCD88
+
+        sudo add-apt-repository \
+           "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+        sudo apt-get update
+        sudo apt-get upgrade -y
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+        sudo groupadd docker
+        sudo usermod -aG docker ubuntu
+        sudo systemctl enable docker
+        
+- Execute ./init-instance.sh drupalVM //to initialize and setup new Docker instance named: drupalVM
+- Don't create this way if you want to use Docker:  sudo multipass launch --name drupalVM 20.04
+- Get inside drupalVM:  
+        sudo multipass shell drupalVM
+        docker run hello-world //Verify Docker is installed correctly:  
+    Since you do not have composer, you can create Drupal as follow:
+        docker run --rm -i --tty -v $PWD:/app composer create-project drupal/recommended-project my_site_name_dir --ignore-platform-reqs
+
 - Initialize Docker on drupalVM:  
 - The steps required to setup Docker Swarm on Ubuntu 20.04 on Multipass are:
 
