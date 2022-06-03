@@ -28,9 +28,9 @@
 -   sudo nano init-instance.sh
         
         NM=$1
-        multipass launch --name ${NM} focal
-        multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
-        multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
+        sudo multipass launch --name ${NM} focal
+        sudo multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
+        sudo multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
 
 -   sudo nano setup-instance.sh
         
