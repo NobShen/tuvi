@@ -12,6 +12,7 @@
         multipass stop --all
         // now tell Multipass to use libvirt
         sudo multipass set local.driver=libvirt
+        sudo multipass list
 
 - Create a Docker instance:
 
