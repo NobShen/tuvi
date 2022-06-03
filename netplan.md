@@ -1,3 +1,5 @@
+How to Create a Bridged Network for LXD Containers
+
 Create a Netplan Bridge
 The first thing you must do is create a bridge using Netplan. This is done on the host computer. Netplan uses configuration files found in /etc/netplan. We’re going to edit the existing file and add the bridge to that. Before you touch that file, you’ll want to back it up.
 
