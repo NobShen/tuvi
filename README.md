@@ -3,6 +3,11 @@
 - Use http://192.168.254.254/cgi-bin/home.ha to find out the ip address of the server
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
+- Use libvirt driver:
+        
+        sudo multipass set local.driver=libvirt
+
+
 - Setup multipass network configuration:  make sure lxd driver is used: 
         
         sudo multipass set local.driver=lxd        
