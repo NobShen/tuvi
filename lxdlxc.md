@@ -60,3 +60,27 @@ lxd init
   - Trust password - drupalpass
   - Cached images updated automatically - YES
   - Print YAML - NO
+
+
+(1) background
+- hoi nhap vn voi the gioi
+- evfta / cptpp / ipef
+- labor is ignored
+- vn new labor law 2019 not effective
+- doi xu qua tan te
+- quyen thuong luong tap the
+(2) Who are we?
+- 
+(3) Muc tieu cua VWD
+- bao dam labor law duoc enforce
+- interface
+- connection
+- international organization
+- advocate implementation of ilo conventions
+- information mechanism
+- raise voice of the unknown
+- bao ve nld thanh lap nghiep doan
+- contact unions
+- cai sua blld
+
+
