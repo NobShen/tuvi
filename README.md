@@ -3,23 +3,53 @@
 - Use http://192.168.254.254/cgi-bin/home.ha to find out the ip address of the server
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
-- Use libvirt driver:
+
+- lxd is pre-installed with Ubuntu 22.04
+- Install NetworkManager as renderer
         
-        sudo multipass set local.driver=libvirt
+        sudo apt install network-manager -y
 
-
+  And modify netplan to use NetworkManager as renderer:
+  
+        echo $'network:\n  version: 2\n. renderer: NetworkManager' > /etc/netplan/00-installer-config.yaml
+        
 - Setup multipass network configuration:  make sure lxd driver is used: 
         
         sudo multipass set local.driver=lxd        
         sudo snap restart multipass.multipassd
         
-  Show multipass networks:  
+- Show multipass networks:  
         
         sudo multipass networks
         Name    Type      Description
-        enp3s0  ethernet  Ethernet device
-        mpbr0   bridge    Network bridge for Multipass
+        enp0s25  ethernet  Ethernet device
+        mpbr0    bridge    Network bridge for Multipass
+  
+- Reboot for the change in netplan to take effect
+
+- Then create a new VM using the enp0s25 Ethernet device
+        
+        multipass launch --network=enp0s25
+
+        Multipass needs to create a bridge to connect to enp1s0.
+        Do you want to continue (yes/no)? yes
+        Creating vm....
+
+- At this point, the ip addr of the host is removed (?) from enp0s25 (only ipv6 remain why?)
+- And a physical ip addr is given to the new VM
 - 
+        
+        multipass list
+
+        Name                    State             IPv4             Image
+        sinewy-kookaburra       Running           10.86.127.216    Ubuntu 20.04 LTS
+                                                  192.168.254.35
+- Launching another VM will get another physical ip addr
+
+So we'll need to find out how to preserve the host ip addr.
+This procedure is from this url:  https://www.rootisgod.com/2022/Using-Multipass-Like-a-Personal-Cloud-Service/
+We may want to try the following:
+
 - Bridge to physical network:  sudo multipass launch --network enp3s0 --network name=mpbr0,mode=manual
 - Bridge multipass network to physical network:  sudo multipass launch --network en0 --network name=bridge0,mode=manual
 - If failed, check:  sudo lxd -d -v init
@@ -109,6 +139,10 @@
         composer create-project drupal-composer/drupal-project:9.x-dev askVN --no-interaction
 
 Miscellaneous:
+- When to use libvirt driver:
+        
+        sudo multipass set local.driver=libvirt
+
 - Install Ubuntu desktop on your server:  
         
         sudo apt-get install --no-install-recommends ubuntu-desktop
