@@ -33,6 +33,7 @@
         sudo multipass launch --network=mpbr0 //this option will create VM with 2 ip 10.77.97.154 & 10.77.97.96 (mpbr0 ?) so 2 ip connections
         sudo multipass laucnh --network=enp0s25 //this option will 1st create a bridge device br-enp0s25 with 2 slaves br-enp0s25-child and tapxxxx
         then create VM with ip 
+        if you delete br-enp0s25 then the ip addr is available for the host
         
         multipass launch --network=enp0s25
 
