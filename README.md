@@ -1,13 +1,149 @@
-# create tuvi.com website 
+# VM clustering using lxd
 - Install Ubuntu server 22.04 & ignore lid behavior:  sudo nano /etc/systemd/logind.conf && systemctl restart systemd-logind.service
 - Use http://192.168.254.254/cgi-bin/home.ha to find out the ip address of the server
 
 - LXD method:
-        LXD already preinstalled on Ubuntu 22.04 server
+        
+  LXD already preinstalled on Ubuntu 22.04 server - check by: 
+  
+        multipass2@multipass2:~$ sudo lxd
+        ERROR  [2022-06-07T03:18:58Z] Failed to start the daemon                    err="LXD is already running"
+        Error: LXD is already running
+   
+        multipass2@multipass2:~$ ip a
+        1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+            link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+            inet 127.0.0.1/8 scope host lo
+               valid_lft forever preferred_lft forever
+            inet6 ::1/128 scope host 
+               valid_lft forever preferred_lft forever
+        2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+            link/ether 5c:f9:dd:4d:1c:26 brd ff:ff:ff:ff:ff:ff
+            inet 192.168.254.144/24 metric 100 brd 192.168.254.255 scope global dynamic enp3s0
+               valid_lft 14132sec preferred_lft 14132sec
+            inet6 fe80::5ef9:ddff:fe4d:1c26/64 scope link 
+               valid_lft forever preferred_lft forever
+        3: wlp2s0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+            link/ether 84:a6:c8:13:32:60 brd ff:ff:ff:ff:ff:ff
+        
+  You'll not be able to create a VM until lxd init
+  
+        multipass2@multipass2:~$ lxc launch ubuntu:20.04 --network=enp3s0
+        Creating the instance
+        Error: Failed instance creation: Failed creating instance record: Failed initialising instance: Invalid devices: Failed detecting root disk device: No root device could be found
+        multipass2@multipass2:~$ 
+
+  So lxd init
+        
+        multipass2@multipass2:~$ sudo lxd init
+        [sudo] password for multipass2: 
+        Would you like to use LXD clustering? (yes/no) [default=no]: 
+        Do you want to configure a new storage pool? (yes/no) [default=yes]: 
+        Name of the new storage pool [default=default]: 
+        Name of the storage backend to use (btrfs, dir, lvm, zfs, ceph) [default=zfs]: dir
+        Would you like to connect to a MAAS server? (yes/no) [default=no]: 
+        Would you like to create a new local network bridge? (yes/no) [default=yes]: 
+        What should the new bridge be called? [default=lxdbr0]: 
+        What IPv4 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]: 
+        What IPv6 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]: none
+        Would you like the LXD server to be available over the network? (yes/no) [default=no]: yes
+        Address to bind LXD to (not including port) [default=all]: 
+        Port to bind LXD to [default=8443]: 
+        Trust password for new clients: 
+        Again: 
+        Would you like stale cached images to be updated automatically? (yes/no) [default=yes]: 
+        Would you like a YAML "lxd init" preseed to be printed? (yes/no) [default=no]: yes
+        config:
+          core.https_address: '[::]:8443'
+          core.trust_password: drupalpass
+        networks:
+        - config:
+            ipv4.address: auto
+            ipv6.address: none
+          description: ""
+          name: lxdbr0
+          type: ""
+          project: default
+        storage_pools:
+        - config: {}
+          description: ""
+          name: default
+          driver: dir
+        profiles:
+        - config: {}
+          description: ""
+          devices:
+            eth0:
+              name: eth0
+              network: lxdbr0
+              type: nic
+            root:
+              path: /
+              pool: default
+              type: disk
+          name: default
+        projects: []
+        cluster: null
+
+  Check ip addr will show lxdbr0 created:
+        
+        multipass2@multipass2:~$ ip addr
+        1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+            link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+            inet 127.0.0.1/8 scope host lo
+               valid_lft forever preferred_lft forever
+            inet6 ::1/128 scope host 
+               valid_lft forever preferred_lft forever
+        2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+            link/ether 5c:f9:dd:4d:1c:26 brd ff:ff:ff:ff:ff:ff
+            inet 192.168.254.144/24 metric 100 brd 192.168.254.255 scope global dynamic enp3s0
+               valid_lft 13286sec preferred_lft 13286sec
+            inet6 fe80::5ef9:ddff:fe4d:1c26/64 scope link 
+               valid_lft forever preferred_lft forever
+        3: wlp2s0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+            link/ether 84:a6:c8:13:32:60 brd ff:ff:ff:ff:ff:ff
+        4: lxdbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+            link/ether 00:16:3e:57:73:3f brd ff:ff:ff:ff:ff:ff
+            inet 10.31.131.1/24 scope global lxdbr0
+               valid_lft forever preferred_lft forever
+
+  After lxd init, you can lxc launch:
+        
+        multipass2@multipass2:~$ lxc launch ubuntu:20.04 --network=enp3s0
+        Creating the instance
+        Instance name is: elegant-drake           
+        Starting elegant-drake
+
+  Check that the VM is on your network:
+  
+        multipass2@multipass2:~$ lxc list
+        +---------------+---------+------------------------+------+-----------+-----------+
+        |     NAME      |  STATE  |          IPV4          | IPV6 |   TYPE    | SNAPSHOTS |
+        +---------------+---------+------------------------+------+-----------+-----------+
+        | elegant-drake | RUNNING | 192.168.254.176 (eth0) |      | CONTAINER | 0         |
+        +---------------+---------+------------------------+------+-----------+-----------+
+
+
+        No need to install NetworkManager (only needed to use the nmcli commands)
         Install network-manager to use nmtui
         do we need to run lxd init?
         lxc launch ubuntu:20.04 --network=enp0s25
-        
+  
+  In case you just want a private VM then launch without --network=enp0s25
+  
+        multipass2@multipass2:~$ lxc launch ubuntu:20.04
+        Creating the instance
+        Instance name is: expert-perch            
+        Starting expert-perch
+        multipass2@multipass2:~$ lxc list
+        +---------------+---------+------------------------+------+-----------+-----------+
+        |     NAME      |  STATE  |          IPV4          | IPV6 |   TYPE    | SNAPSHOTS |
+        +---------------+---------+------------------------+------+-----------+-----------+
+        | elegant-drake | RUNNING | 192.168.254.176 (eth0) |      | CONTAINER | 0         |
+        +---------------+---------+------------------------+------+-----------+-----------+
+        | expert-perch  | RUNNING | 10.31.131.170 (eth0)   |      | CONTAINER | 0         |
+        +---------------+---------+------------------------+------+-----------+-----------+
+
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
 
