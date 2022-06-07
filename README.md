@@ -144,6 +144,10 @@
         | expert-perch  | RUNNING | 10.31.131.170 (eth0)   |      | CONTAINER | 0         |
         +---------------+---------+------------------------+------+-----------+-----------+
 
+  THIS IS ALL YOU NEED TO CREATE VM's WITH PHYSICAL IP ADDR
+  
+  THE REST OF THIS PAGE IS FOR REFERENCE ONLY - DON'T USE IT
+
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
 
