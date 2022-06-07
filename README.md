@@ -1,6 +1,13 @@
 # create tuvi.com website 
 - Install Ubuntu server 22.04 & ignore lid behavior:  sudo nano /etc/systemd/logind.conf && systemctl restart systemd-logind.service
 - Use http://192.168.254.254/cgi-bin/home.ha to find out the ip address of the server
+
+- LXD method:
+        LXD already preinstalled on Ubuntu 22.04 server
+        Install network-manager to use nmtui
+        do we need to run lxd init?
+        lxc launch ubuntu:20.04 --network=enp0s25
+        
 - Install multipass:  sudo snap install multipass && sudo snap info multipass
 -   To remove:  sudo snap remove multipass
 
