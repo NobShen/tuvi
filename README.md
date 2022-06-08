@@ -192,7 +192,6 @@
 
 - At this point, the ip addr of the host is removed (?) from enp0s25 (only ipv6 remain why?)
 - And a physical ip addr is given to the new VM
-- 
         
         multipass list
 
@@ -220,7 +219,7 @@ We may want to try the following:
         NM=$1
         NET=$2
         lxc launch ubuntu:22.04 ${NM} --network=${NET}
-        lxc file push setup-instance.sh ${NM}:/root/setup-instance.sh
+        lxc file push setup-instance.sh ${NM}/root/setup-instance.sh
         lxc exec ${NM} -- sh -x /root/setup-instance.sh
 
 -   sudo nano setup-instance.sh
