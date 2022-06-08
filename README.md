@@ -107,6 +107,8 @@
             inet 10.31.131.1/24 scope global lxdbr0
                valid_lft forever preferred_lft forever
 
+  And you can ping ubuntu.com from both inside a VM and from the host.
+  
   After lxd init, you can lxc launch:
         
         multipass2@multipass2:~$ lxc launch ubuntu:20.04 --network=enp3s0
@@ -216,9 +218,10 @@ We may want to try the following:
 -   sudo nano init-instance.sh
         
         NM=$1
-        sudo multipass launch --name ${NM} focal
-        sudo multipass transfer setup-instance.sh ${NM}:/home/ubuntu/setup-instance.sh
-        sudo multipass exec ${NM} -- sh -x /home/ubuntu/setup-instance.sh
+        NET=$2
+        lxc launch ubuntu:22.04 ${NM} --network=${NET}
+        lxc file push setup-instance.sh ${NM}:/root/setup-instance.sh
+        lxc exec ${NM} -- sh -x /root/setup-instance.sh
 
 -   sudo nano setup-instance.sh
         
